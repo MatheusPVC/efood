@@ -1,61 +1,56 @@
-import Tag from '../Tag'
-import {
-  MenuContainer,
-  NextButton,
-  OrderContainer,
-  OrderInfo,
-  OrdersList,
-  TotalValue,
-  TrashButton
-} from './styles'
+import Delivery from '../Delivery'
+import OrderFinished from '../OrderFinished'
+import OrdersList from '../OrdersList'
+import Payment from '../Payments'
 
-import pizza from '../../assets/images/Pizza.png'
-import lixeira from '../../assets/images/lixeira.png'
+import { MenuContainer } from './styles'
 
-const LateralMenu = () => (
-  <MenuContainer>
-    <OrdersList>
-      <OrderContainer>
-        <img src={pizza} />
-        <OrderInfo>
-          <h3>Pizza Marguerita</h3>
-          <span>R$ 60,90</span>
-        </OrderInfo>
-        <TrashButton>
-          <img src={lixeira} alt="lixeira" />
-        </TrashButton>
-      </OrderContainer>
-      <OrderContainer>
-        <img src={pizza} />
-        <OrderInfo>
-          <h3>Pizza Marguerita</h3>
-          <span>R$ 60,90</span>
-        </OrderInfo>
-        <TrashButton>
-          <img src={lixeira} alt="lixeira" />
-        </TrashButton>
-      </OrderContainer>
-      <OrderContainer>
-        <img src={pizza} />
-        <OrderInfo>
-          <h3>Pizza Marguerita</h3>
-          <span>R$ 60,90</span>
-        </OrderInfo>
-        <TrashButton>
-          <img src={lixeira} alt="lixeira" />
-        </TrashButton>
-      </OrderContainer>
-    </OrdersList>
-    <TotalValue>
-      <p>Valor</p>
-      <span>R$ 182,70</span>
-    </TotalValue>
-    <NextButton>
-      <Tag size="big" invertColors="yes">
-        Continuar com a entrega
-      </Tag>
-    </NextButton>
-  </MenuContainer>
-)
+import { useState } from 'react'
+
+type Props = {
+  closeMenuFunction: () => void
+}
+
+const LateralMenu = ({ closeMenuFunction }: Props) => {
+  const [menuState, setMenuState] = useState(0)
+
+  function next() {
+    setMenuState(menuState + 1)
+  }
+
+  function back() {
+    setMenuState(menuState - 1)
+  }
+
+  function move(num: number) {
+    setMenuState(num)
+  }
+
+  if (menuState === 0) {
+    return (
+      <MenuContainer>
+        <OrdersList next={next} />
+      </MenuContainer>
+    )
+  } else if (menuState === 1) {
+    return (
+      <MenuContainer>
+        <Delivery move={move} />
+      </MenuContainer>
+    )
+  } else if (menuState === 2) {
+    return (
+      <MenuContainer>
+        <Payment mover={move} />
+      </MenuContainer>
+    )
+  } else {
+    return (
+      <MenuContainer>
+        <OrderFinished closeMenuFunction={closeMenuFunction} />
+      </MenuContainer>
+    )
+  }
+}
 
 export default LateralMenu

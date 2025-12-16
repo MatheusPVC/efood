@@ -124,7 +124,7 @@ const Perfil = () => {
           }
         }}
       >
-        <LateralMenu />
+        <LateralMenu closeMenuFunction={closeMenu} />
       </Modal>
     </>
   )
