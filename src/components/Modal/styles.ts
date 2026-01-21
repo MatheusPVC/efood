@@ -8,6 +8,7 @@ export const ModalContainer = styled.div`
   background-color: ${cores.rosa};
   color: ${cores.branca};
   position: relative;
+  z-index: 1;
 
   img {
     height: 280px;

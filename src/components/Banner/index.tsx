@@ -1,18 +1,22 @@
 import macarrao from '../../assets/images/Macarrão.png'
+import { Restaurante } from '../../pages/Home'
 import { BannerContainer, BannerContent, Darkness } from './styles'
 
-const Banner = () => (
+type Props = {
+  restaurante: Restaurante
+}
+const Banner = ({ restaurante }: Props) => (
   <BannerContainer
     style={{
-      backgroundImage: `url(${macarrao})`
+      backgroundImage: `url(${restaurante.capa})`
     }}
   >
     <Darkness>
       <BannerContent className="container">
         <ul>
-          <li>Italiana</li>
+          <li>{restaurante.tipo}</li>
         </ul>
-        <h1>La Dolce Vita Trattoria</h1>
+        <h1>{restaurante.titulo}</h1>
       </BannerContent>
     </Darkness>
   </BannerContainer>

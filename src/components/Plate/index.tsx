@@ -1,25 +1,62 @@
+import { useState } from 'react'
+import { Prato } from '../../pages/Home'
+import ModalBox from '../Modal'
 import Tag from '../Tag'
 
-import { PlateContainer } from './styles'
+import { PlateContainer, Modal } from './styles'
 
 type Props = {
-  image: string
-  title: string
-  description: string
-  buttonFunction: () => void
+  prato: Prato
 }
 
-const Plate = ({ image, title, description, buttonFunction }: Props) => (
-  <PlateContainer>
-    <img src={image} alt="pizza" />
-    <h2>{title}</h2>
-    <p>{description}</p>
-    <button onClick={buttonFunction}>
-      <Tag invertColors="yes" size="big">
-        Adicione ao carrinho
-      </Tag>
-    </button>
-  </PlateContainer>
-)
+const Plate = ({ prato }: Props) => {
+  const getDescricao = (descricao: string) => {
+    if (descricao.length > 120) {
+      return descricao.slice(0, 117) + '...'
+    }
+    return descricao
+  }
+
+  const [modal, setModal] = useState(false)
+
+  function openModal() {
+    setModal(true)
+  }
+
+  function closeModal() {
+    setModal(false)
+  }
+
+  return (
+    <>
+      <PlateContainer>
+        <img src={prato.foto} alt="pizza" />
+        <h2>{prato.nome}</h2>
+        <p>{getDescricao(prato.descricao)}</p>
+        <button onClick={() => openModal()}>
+          <Tag invertColors="yes" size="big">
+            Mais detalhes
+          </Tag>
+        </button>
+      </PlateContainer>
+      <Modal className={modal ? 'visible' : ''}>
+        <ModalBox
+          closeFunction={closeModal}
+          description={prato.descricao}
+          image={prato.foto}
+          price={prato.preco}
+          serve={prato.porcao}
+          title={prato.nome}
+        />
+        <div
+          className="overlay"
+          onClick={() => {
+            closeModal()
+          }}
+        ></div>
+      </Modal>
+    </>
+  )
+}
 
 export default Plate

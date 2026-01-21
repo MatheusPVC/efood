@@ -1,25 +1,25 @@
-import PlateClass from '../../models/Plate'
+import { useEffect, useState } from 'react'
+import { Restaurante } from '../../pages/Home'
+import ModalBox from '../Modal'
 import Plate from '../Plate'
 import { PlateListContainer } from './styles'
 
 type Props = {
-  plates: PlateClass[]
-  openModalFunction: () => void
+  restaurant: Restaurante
 }
 
-const PlateList = ({ plates, openModalFunction }: Props) => (
-  <PlateListContainer className="container">
-    {plates.map((plate) => (
-      <li key={plate.id}>
-        <Plate
-          image={plate.image}
-          title={plate.title}
-          description={plate.description}
-          buttonFunction={openModalFunction}
-        />
-      </li>
-    ))}
-  </PlateListContainer>
-)
+const PlateList = ({ restaurant }: Props) => {
+  return (
+    <>
+      <PlateListContainer className="container">
+        {restaurant.cardapio.map((plate) => (
+          <li key={plate.id}>
+            <Plate prato={plate} />
+          </li>
+        ))}
+      </PlateListContainer>
+    </>
+  )
+}
 
 export default PlateList

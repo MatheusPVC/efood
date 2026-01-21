@@ -3,7 +3,7 @@ import { TagContainer } from './styles'
 export type Props = {
   size?: 'small' | 'big'
   invertColors?: 'yes' | 'no'
-  children: string
+  children: string | string[]
 }
 
 const Tag = ({ size = 'small', invertColors = 'no', children }: Props) => (
