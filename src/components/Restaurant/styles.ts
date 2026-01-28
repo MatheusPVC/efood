@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { cores } from '../../styles'
+import { breakpoint, cores } from '../../styles'
 import { TagContainer } from '../Tag/styles'
 import { Link } from 'react-router-dom'
 
@@ -31,11 +31,16 @@ export const InfoContainer = styled.div`
 
   p {
     max-height: 88px;
-    height: 88px;
+    height: 100%;
     max-width: 456px;
+    width: 100%;
     margin: 16px 0;
     font-size: 14px;
     line-height: 22px;
+
+    @media (max-width: ${breakpoint.desktop}) {
+      overflow-y: hidden;
+    }
   }
 `
 

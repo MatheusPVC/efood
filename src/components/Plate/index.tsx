@@ -40,14 +40,7 @@ const Plate = ({ prato }: Props) => {
         </button>
       </PlateContainer>
       <Modal className={modal ? 'visible' : ''}>
-        <ModalBox
-          closeFunction={closeModal}
-          description={prato.descricao}
-          image={prato.foto}
-          price={prato.preco}
-          serve={prato.porcao}
-          title={prato.nome}
-        />
+        <ModalBox closeFunction={closeModal} prato={prato} />
         <div
           className="overlay"
           onClick={() => {

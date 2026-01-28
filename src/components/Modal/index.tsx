@@ -1,44 +1,45 @@
 import Tag from '../Tag'
-import pizza from '../../assets/images/Pizza.png'
 import close from '../../assets/images/close.png'
 import { CloseButton, InfoContainer, ModalContainer } from './styles'
+import { Prato } from '../../pages/Home'
+
+import { add } from '../../store/reducers/Cart'
+import { useDispatch } from 'react-redux'
 
 type Props = {
-  image: string
-  title: string
-  description: string
-  serve: string
-  price: number
+  prato: Prato
   closeFunction: () => void
 }
 
-const ModalBox = ({
-  closeFunction,
-  description,
-  image,
-  title,
-  serve,
-  price
-}: Props) => (
-  <ModalContainer className="container">
-    <CloseButton onClick={closeFunction}>
-      <img src={close} />
-    </CloseButton>
-    <img src={image} alt={title} />
-    <InfoContainer>
-      <h3>{title}</h3>
-      <p>
-        {description}
-        <br />
-        <br /> Serve: {serve}
-      </p>
-      <button>
-        <Tag invertColors="yes" size="big">
-          Adicionar ao carrinho - R$ {price.toFixed(2)}
-        </Tag>
-      </button>
-    </InfoContainer>
-  </ModalContainer>
-)
+const ModalBox = ({ closeFunction, prato }: Props) => {
+  const dispatch = useDispatch()
+
+  const addToCart = () => {
+    dispatch(add(prato))
+    closeFunction()
+  }
+
+  return (
+    <ModalContainer className="container">
+      <CloseButton onClick={closeFunction}>
+        <img src={close} />
+      </CloseButton>
+      <img src={prato.foto} alt={prato.nome} />
+      <InfoContainer>
+        <h3>{prato.nome}</h3>
+        <p>
+          {prato.descricao}
+          <br />
+          <br /> Serve: {prato.porcao}
+        </p>
+        <button onClick={addToCart}>
+          <Tag invertColors="yes" size="big">
+            Adicionar ao carrinho - R$ {prato.preco.toFixed(2)}
+          </Tag>
+        </button>
+      </InfoContainer>
+    </ModalContainer>
+  )
+}
 
 export default ModalBox

@@ -10,14 +10,18 @@ export const OrderContainer = styled.li`
   color: ${cores.rosa};
   position: relative;
   img {
-    height: 80px;
-    width: 80px;
+    max-height: 84px;
+    max-width: 84px;
+    height: 100%;
+    width: 100%;
     object-fit: cover;
   }
 `
 
 export const OrdersListContainer = styled.ul`
   display: grid;
+  max-height: 540px;
+  overflow-y: auto;
   grid-template-columns: 1fr;
   row-gap: 8px;
   margin-bottom: 40px;

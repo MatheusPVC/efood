@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { cores } from '../../styles'
+import { breakpoint, cores } from '../../styles'
 
 export const NavBarContainer = styled.div`
   width: 100%;
@@ -14,6 +14,10 @@ export const NavBarContainer = styled.div`
     text-decoration: none;
     color: ${cores.rosa};
     cursor: pointer;
+  }
+
+  @media (max-width: ${breakpoint.tablet}) {
+    display: none;
   }
 `
 

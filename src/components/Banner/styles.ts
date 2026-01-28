@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { cores } from '../../styles'
+import { breakpoint, cores } from '../../styles'
 
 export const BannerContainer = styled.div`
   max-height: 280px;
@@ -31,5 +31,8 @@ export const BannerContent = styled.div`
     margin-top: 156px;
     font-size: 32px;
     font-weight: 900;
+    @media (max-width: ${breakpoint.tablet}) {
+      margin-top: 110px;
+    }
   }
 `

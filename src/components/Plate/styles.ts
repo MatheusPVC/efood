@@ -1,13 +1,15 @@
 import styled from 'styled-components'
 import { TagContainer } from '../Tag/styles'
-import { cores } from '../../styles'
+import { breakpoint, cores } from '../../styles'
 
 export const PlateContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 8px;
-  height: 338px;
-  width: 320px;
+  max-height: 338px;
+  max-width: 320px;
+  height: 100%;
+  width: 100%;
   background-color: ${cores.rosa};
   color: ${cores.bege};
 
@@ -38,6 +40,11 @@ export const PlateContainer = styled.div`
 
   ${TagContainer} {
     text-align: center;
+    width: 100%;
+  }
+
+  @media (max-width: ${breakpoint.tablet}) {
+    max-width: 260px;
     width: 100%;
   }
 `
