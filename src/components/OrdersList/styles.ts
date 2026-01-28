@@ -20,7 +20,7 @@ export const OrderContainer = styled.li`
 
 export const OrdersListContainer = styled.ul`
   display: grid;
-  max-height: 540px;
+  max-height: 432px;
   overflow-y: auto;
   grid-template-columns: 1fr;
   row-gap: 8px;
