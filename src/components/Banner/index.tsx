@@ -1,4 +1,3 @@
-import macarrao from '../../assets/images/Macarrão.png'
 import { Restaurante } from '../../pages/Home'
 import { BannerContainer, BannerContent, Darkness } from './styles'
 

@@ -4,11 +4,13 @@ import { Prato } from '../../pages/Home'
 type CartState = {
   items: Prato[]
   isOpen: boolean
+  cartState: number
 }
 
 const initialState: CartState = {
   items: [],
-  isOpen: false
+  isOpen: false,
+  cartState: 0
 }
 
 const cartSlice = createSlice({
@@ -31,10 +33,16 @@ const cartSlice = createSlice({
     },
     close: (state) => {
       state.isOpen = false
+      state.cartState = 0
+    },
+    setCartState: (state, action: PayloadAction<number>) => {
+      if (action.payload >= 0 && action.payload < 4) {
+        state.cartState = action.payload
+      }
     }
   }
 })
 
-export const { add, remove, open, close } = cartSlice.actions
+export const { add, remove, open, close, setCartState } = cartSlice.actions
 
 export default cartSlice.reducer

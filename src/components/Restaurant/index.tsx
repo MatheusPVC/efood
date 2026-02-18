@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import estrela from '../../assets/images/estrela.svg'
 import Tag from '../Tag/index'
 import {
