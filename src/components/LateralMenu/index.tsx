@@ -1,13 +1,21 @@
 import * as S from './styles'
-
-import { close, setCartState, remove } from '../../store/reducers/Cart'
+import { useFormik } from 'formik'
+import { close, setCartState, remove, clear } from '../../store/reducers/Cart'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootReducer } from '../../store'
+import * as Yup from 'yup'
+import { usePurchaseMutation } from '../../services/api'
+import { useEffect } from 'react'
+import InputMask from 'react-input-mask'
+
 import Tag from '../Tag'
 
 import lixeira from '../../assets/images/lixeira.png'
 
 const LateralMenu = () => {
+  const [purchase, { isSuccess, data, reset, isLoading }] =
+    usePurchaseMutation()
+
   const { isOpen, cartState, items } = useSelector(
     (state: RootReducer) => state.cart
   )
@@ -15,6 +23,7 @@ const LateralMenu = () => {
 
   const closeMenu = () => {
     dispatch(close())
+    reset()
   }
 
   const changePage = (n: number) => {
@@ -31,7 +40,151 @@ const LateralMenu = () => {
     }, 0)
   }
 
-  if (cartState === 0) {
+  const form = useFormik({
+    initialValues: {
+      fullName: '',
+      address: '',
+      city: '',
+      cep: '',
+      phone: '',
+      complement: '',
+      cardName: '',
+      cardNumber: '',
+      cardCode: '',
+      expiresMonth: '',
+      expiresYear: ''
+    },
+    validationSchema: Yup.object({
+      fullName: Yup.string()
+        .min(5, 'O nome precisa ter pelo menos 5 caracteres')
+        .required('O campo é obrigatório'),
+      address: Yup.string().required('O campo é obrigatório'),
+      city: Yup.string().required('O campo é obrigatório'),
+      cep: Yup.string()
+        .min(9, 'O cep precisa de 8 dígitos')
+        .max(9, 'O cep precisa de 8 dígitos')
+        .required('O campo é obrigatório'),
+      phone: Yup.string()
+        .min(14, 'O número de celular precisa ter 14 caracteres totais')
+        .max(14, 'O número de celular precisa ter 14 caracteres totais')
+        .required('O campo é obrigatório'),
+      complement: Yup.string().min(
+        10,
+        'O complemento precisa ter pelo menos 10 caracteres'
+      ),
+      cardName: Yup.string().required('O campo é obrigatório'),
+      cardNumber: Yup.string()
+        .min(19, 'O número do cartão precisa ter 16 dígitos')
+        .max(19, 'O número do cartão precisa ter 16 dígitos')
+        .required('O campo é obrigatório'),
+      cardCode: Yup.string()
+        .min(3, 'O cvv precisa ter 3 dígitos')
+        .max(3, 'O cvv precisa ter 3 dígitos')
+        .required('O campo é obrigatório'),
+      expiresMonth: Yup.string()
+        .min(2, 'O mês precisa ter pelo menos 2 dígitos')
+        .max(2, 'O mês precisa ter pelo menos 2 dígitos')
+        .required('O campo é obrigatório'),
+      expiresYear: Yup.string()
+        .min(4, 'O ano precisa ter 4 dígitos')
+        .max(4, 'O ano precisa ter 4 dígitos')
+        .required('O campo é obrigatório')
+    }),
+    onSubmit: (values, { resetForm, setSubmitting }) => {
+      purchase({
+        products: items.map((item) => ({
+          id: item.id,
+          price: item.preco
+        })),
+        delivery: {
+          receiver: values.fullName,
+          address: {
+            description: values.address,
+            city: values.city,
+            zipCode: values.cep,
+            number: values.phone,
+            complement: values.complement
+          }
+        },
+        payment: {
+          card: {
+            name: values.cardName,
+            number: values.cardNumber,
+            code: values.cardCode,
+            expires: {
+              month: values.expiresMonth,
+              year: values.expiresYear
+            }
+          }
+        }
+      })
+      resetForm()
+      setSubmitting(false)
+    }
+  })
+
+  const checkInputHasError = (fieldName: string) => {
+    const isInvalid = fieldName in form.errors
+    const isTouched = fieldName in form.touched
+    const hasError = isInvalid && isTouched
+
+    return hasError
+  }
+
+  const deliveryInfoIsValid = () => {
+    if (
+      'fullName' in form.errors ||
+      'address' in form.errors ||
+      'city' in form.errors ||
+      'cep' in form.errors ||
+      'phone' in form.errors ||
+      'complement' in form.errors ||
+      form.dirty === false
+    ) {
+      alert(
+        'As informações de entrega devem estar preenchidas com valores válidos'
+      )
+    } else {
+      changePage(2)
+    }
+  }
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(clear())
+    }
+  }, [isSuccess, dispatch])
+
+  if (isSuccess && data) {
+    return (
+      <S.MenuContainer className={isOpen ? 'is-open' : ''}>
+        <S.Overlay onClick={closeMenu} />
+        <S.MenuContent>
+          <S.FinishedContainer>
+            <h3>Pedido realizado - {data.orderId}</h3>
+            <p>
+              Estamos felizes em informar que seu pedido já está em processo de
+              preparação e, em breve, será entregue no endereço fornecido.
+              <br />
+              <br /> Gostaríamos de ressaltar que nossos entregadores não estão
+              autorizados a realizar cobranças extras. <br />
+              <br /> Lembre-se da importância de higienizar as mãos após o
+              recebimento do pedido, garantindo assim sua segurança e bem-estar
+              durante a refeição.
+              <br />
+              <br /> Esperamos que desfrute de uma deliciosa e agradável
+              experiência gastronômica. Bom apetite!
+            </p>
+            <S.NextButton onClick={closeMenu}>
+              <Tag size="big" invertColors="yes">
+                Finalizar
+              </Tag>
+            </S.NextButton>
+          </S.FinishedContainer>
+        </S.MenuContent>
+      </S.MenuContainer>
+    )
+  } else if (cartState === 0) {
     return (
       <S.MenuContainer className={isOpen ? 'is-open' : ''}>
         <S.Overlay onClick={closeMenu} />
@@ -70,46 +223,107 @@ const LateralMenu = () => {
         </S.MenuContent>
       </S.MenuContainer>
     )
-  } else if (cartState < 3) {
+  } else {
     return (
       <S.MenuContainer className={isOpen ? 'is-open' : ''}>
         <S.Overlay onClick={closeMenu} />
         <S.MenuContent>
-          <form>
+          <form onSubmit={form.handleSubmit}>
             {cartState === 1 ? (
               <S.FormContainer>
                 <h3>Entrega</h3>
                 <S.GridContainer>
                   <S.InputContainer>
-                    <S.Label htmlFor="nome">Quem irá receber?</S.Label>
-                    <S.Input type="text" id="nome" />
+                    <S.Label htmlFor="fullName">Quem irá receber?</S.Label>
+                    <input
+                      type="text"
+                      id="fullName"
+                      name="fullName"
+                      value={form.values.fullName}
+                      onChange={form.handleChange}
+                      onBlur={form.handleBlur}
+                      className={
+                        checkInputHasError('fullName') ? 'hasError' : ''
+                      }
+                    />
                   </S.InputContainer>
                   <S.InputContainer>
                     <S.Label htmlFor="address">Endereço</S.Label>
-                    <S.Input type="text" id="address" />
+                    <input
+                      type="text"
+                      id="address"
+                      name="address"
+                      value={form.values.address}
+                      onChange={form.handleChange}
+                      onBlur={form.handleBlur}
+                      className={
+                        checkInputHasError('address') ? 'hasError' : ''
+                      }
+                    />
                   </S.InputContainer>
                   <S.InputContainer>
                     <S.Label htmlFor="city">Cidade</S.Label>
-                    <S.Input type="text" id="city" />
+                    <input
+                      type="text"
+                      id="city"
+                      name="city"
+                      value={form.values.city}
+                      onChange={form.handleChange}
+                      onBlur={form.handleBlur}
+                      className={checkInputHasError('city') ? 'hasError' : ''}
+                    />
                   </S.InputContainer>
                   <S.InputSeparator>
                     <S.InputContainer>
                       <S.Label htmlFor="cep">CEP</S.Label>
-                      <S.Input type="text" id="cep" />
+                      <InputMask
+                        type="text"
+                        id="cep"
+                        name="cep"
+                        value={form.values.cep}
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        className={checkInputHasError('cep') ? 'hasError' : ''}
+                        mask="99999-999"
+                      />
                     </S.InputContainer>
                     <S.InputContainer>
                       <S.Label htmlFor="phone">Número</S.Label>
-                      <S.Input type="text" id="phone" />
+                      <InputMask
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        value={form.values.phone}
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        className={
+                          checkInputHasError('phone') ? 'hasError' : ''
+                        }
+                        mask="(99)99999-9999"
+                      />
                     </S.InputContainer>
                   </S.InputSeparator>
                   <S.InputContainer>
                     <S.Label htmlFor="complement">
                       Complemento (opcional)
                     </S.Label>
-                    <S.Input type="text" id="complement" />
+                    <input
+                      type="text"
+                      id="complement"
+                      name="complement"
+                      value={form.values.complement}
+                      onChange={form.handleChange}
+                      onBlur={form.handleBlur}
+                      className={
+                        checkInputHasError('complement') ? 'hasError' : ''
+                      }
+                    />
                   </S.InputContainer>
                 </S.GridContainer>
-                <S.NextButton type="button" onClick={() => changePage(2)}>
+                <S.NextButton
+                  type="button"
+                  onClick={() => deliveryInfoIsValid()}
+                >
                   <Tag size="big" invertColors="yes">
                     Continuar com o pagamento
                   </Tag>
@@ -127,33 +341,83 @@ const LateralMenu = () => {
                 </h3>
                 <S.GridContainer className="exception">
                   <S.InputContainer>
-                    <S.Label htmlFor="nome-cartao">Nome no cartão</S.Label>
-                    <S.Input type="text" id="nome-cartao" />
+                    <S.Label htmlFor="cardName">Nome no cartão</S.Label>
+                    <input
+                      type="text"
+                      id="cardName"
+                      name="cardName"
+                      value={form.values.cardName}
+                      onChange={form.handleChange}
+                      onBlur={form.handleBlur}
+                      className={
+                        checkInputHasError('cardName') ? 'hasError' : ''
+                      }
+                    />
                   </S.InputContainer>
                   <S.InputSeparator firstInput="2" secondInput="1">
-                    <S.InputContainer id="numero-cartao-container">
-                      <S.Label htmlFor="numero-cartao">
-                        Número do cartão
-                      </S.Label>
-                      <S.Input type="text" id="numero-cartao" />
+                    <S.InputContainer>
+                      <S.Label htmlFor="cardNumber">Número do cartão</S.Label>
+                      <InputMask
+                        type="text"
+                        id="cardNumber"
+                        name="cardNumber"
+                        value={form.values.cardNumber}
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        className={
+                          checkInputHasError('cardNumber') ? 'hasError' : ''
+                        }
+                        mask="9999 9999 9999 9999"
+                      />
                     </S.InputContainer>
                     <S.InputContainer>
-                      <S.Label htmlFor="nome">CVV</S.Label>
-                      <S.Input type="text" id="cvv" />
+                      <S.Label htmlFor="cardCode">CVV</S.Label>
+                      <InputMask
+                        type="text"
+                        id="cardCode"
+                        name="cardCode"
+                        value={form.values.cardCode}
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        className={
+                          checkInputHasError('cardCode') ? 'hasError' : ''
+                        }
+                        mask="999"
+                      />
                     </S.InputContainer>
                   </S.InputSeparator>
                   <S.InputSeparator>
                     <S.InputContainer>
-                      <S.Label htmlFor="mes-vencimento">
+                      <S.Label htmlFor="expiresMonth">
                         Mês do vencimento
                       </S.Label>
-                      <S.Input type="text" id="mes-vencimento" />
+                      <InputMask
+                        type="text"
+                        id="expiresMonth"
+                        name="expiresMonth"
+                        value={form.values.expiresMonth}
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        className={
+                          checkInputHasError('expiresMonth') ? 'hasError' : ''
+                        }
+                        mask="99"
+                      />
                     </S.InputContainer>
                     <S.InputContainer>
-                      <S.Label htmlFor="ano-vencimento">
-                        Ano do vencimento
-                      </S.Label>
-                      <S.Input type="text" id="ano-vencimento" />
+                      <S.Label htmlFor="expiresYear">Ano do vencimento</S.Label>
+                      <InputMask
+                        type="text"
+                        id="expiresYear"
+                        name="expiresYear"
+                        value={form.values.expiresYear}
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        className={
+                          checkInputHasError('expiresYear') ? 'hasError' : ''
+                        }
+                        mask="9999"
+                      />
                     </S.InputContainer>
                   </S.InputSeparator>
                 </S.GridContainer>
@@ -161,9 +425,9 @@ const LateralMenu = () => {
             )}
             {cartState === 2 ? (
               <>
-                <S.NextButton type="submit" onClick={() => changePage(3)}>
+                <S.NextButton type="submit" disabled={isLoading}>
                   <Tag size="big" invertColors="yes">
-                    Finalizar pagamento
+                    {isLoading ? 'Finalizando compra...' : 'Finalizar compra'}
                   </Tag>
                 </S.NextButton>
                 <S.NextButton type="button" onClick={() => changePage(1)}>
@@ -176,35 +440,6 @@ const LateralMenu = () => {
               ''
             )}
           </form>
-        </S.MenuContent>
-      </S.MenuContainer>
-    )
-  } else {
-    return (
-      <S.MenuContainer className={isOpen ? 'is-open' : ''}>
-        <S.Overlay onClick={closeMenu} />
-        <S.MenuContent>
-          <S.FinishedContainer>
-            <h3>Pedido realizado - ORDER_ID</h3>
-            <p>
-              Estamos felizes em informar que seu pedido já está em processo de
-              preparação e, em breve, será entregue no endereço fornecido.
-              <br />
-              <br /> Gostaríamos de ressaltar que nossos entregadores não estão
-              autorizados a realizar cobranças extras. <br />
-              <br /> Lembre-se da importância de higienizar as mãos após o
-              recebimento do pedido, garantindo assim sua segurança e bem-estar
-              durante a refeição.
-              <br />
-              <br /> Esperamos que desfrute de uma deliciosa e agradável
-              experiência gastronômica. Bom apetite!
-            </p>
-            <S.NextButton onClick={closeMenu}>
-              <Tag size="big" invertColors="yes">
-                Finalizar
-              </Tag>
-            </S.NextButton>
-          </S.FinishedContainer>
         </S.MenuContent>
       </S.MenuContainer>
     )

@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { cores } from '../../styles'
+import { TagContainer } from '../Tag/styles'
 
 type InputSeparatorCustom = {
   firstInput?: string
@@ -58,16 +59,33 @@ export const Label = styled.label`
   margin-bottom: 8px;
 `
 
-export const Input = styled.input`
-  height: 32px;
-  width: 100%;
-  font-size: 14px;
-  font-weight: bold;
-`
+// export const Input = styled.input`
+//   height: 32px;
+//   width: 100%;
+//   font-size: 14px;
+//   font-weight: bold;
+//   border: 1px solid ${cores.branca};
+
+//   &.hasError {
+//     border: 2px solid red;
+//   }
+// `
 
 export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
+
+  input {
+    height: 32px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid ${cores.branca};
+
+    &.hasError {
+      border: 2px solid red;
+    }
+  }
 `
 
 export const GridContainer = styled.div`
@@ -93,6 +111,10 @@ export const NextButton = styled.button`
   width: 100%;
   cursor: pointer;
   margin-bottom: 8px;
+
+  ${TagContainer} {
+    width: 100%;
+  }
 `
 
 //Apartir daqui é a lista de pedidos

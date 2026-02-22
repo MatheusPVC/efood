@@ -35,6 +35,9 @@ const cartSlice = createSlice({
       state.isOpen = false
       state.cartState = 0
     },
+    clear: (state) => {
+      state.items = []
+    },
     setCartState: (state, action: PayloadAction<number>) => {
       if (action.payload >= 0 && action.payload < 4) {
         state.cartState = action.payload
@@ -43,6 +46,7 @@ const cartSlice = createSlice({
   }
 })
 
-export const { add, remove, open, close, setCartState } = cartSlice.actions
+export const { add, remove, open, close, setCartState, clear } =
+  cartSlice.actions
 
 export default cartSlice.reducer
