@@ -46,7 +46,7 @@ const LateralMenu = () => {
       address: '',
       city: '',
       cep: '',
-      phone: '',
+      addressNumber: '',
       complement: '',
       cardName: '',
       cardNumber: '',
@@ -64,13 +64,10 @@ const LateralMenu = () => {
         .min(9, 'O cep precisa de 8 dígitos')
         .max(9, 'O cep precisa de 8 dígitos')
         .required('O campo é obrigatório'),
-      phone: Yup.string()
-        .min(14, 'O número de celular precisa ter 14 caracteres totais')
-        .max(14, 'O número de celular precisa ter 14 caracteres totais')
-        .required('O campo é obrigatório'),
+      addressNumber: Yup.string().required('O campo é obrigatório'),
       complement: Yup.string().min(
-        10,
-        'O complemento precisa ter pelo menos 10 caracteres'
+        7,
+        'O complemento precisa ter pelo menos 7 caracteres'
       ),
       cardName: Yup.string().required('O campo é obrigatório'),
       cardNumber: Yup.string()
@@ -81,13 +78,13 @@ const LateralMenu = () => {
         .min(3, 'O cvv precisa ter 3 dígitos')
         .max(3, 'O cvv precisa ter 3 dígitos')
         .required('O campo é obrigatório'),
-      expiresMonth: Yup.string()
-        .min(2, 'O mês precisa ter pelo menos 2 dígitos')
-        .max(2, 'O mês precisa ter pelo menos 2 dígitos')
+      expiresMonth: Yup.number()
+        .min(1, 'O mês precisa estar entre 1 e 12')
+        .max(12, 'O mês precisa estar entre 1 e 12')
         .required('O campo é obrigatório'),
       expiresYear: Yup.string()
-        .min(4, 'O ano precisa ter 4 dígitos')
-        .max(4, 'O ano precisa ter 4 dígitos')
+        .min(2, 'O ano precisa ter 2 dígitos')
+        .max(2, 'O ano precisa ter 2 dígitos')
         .required('O campo é obrigatório')
     }),
     onSubmit: (values, { resetForm, setSubmitting }) => {
@@ -102,7 +99,7 @@ const LateralMenu = () => {
             description: values.address,
             city: values.city,
             zipCode: values.cep,
-            number: values.phone,
+            number: values.addressNumber,
             complement: values.complement
           }
         },
@@ -137,7 +134,7 @@ const LateralMenu = () => {
       'address' in form.errors ||
       'city' in form.errors ||
       'cep' in form.errors ||
-      'phone' in form.errors ||
+      'addressNumber' in form.errors ||
       'complement' in form.errors ||
       form.dirty === false
     ) {
@@ -285,21 +282,23 @@ const LateralMenu = () => {
                         onBlur={form.handleBlur}
                         className={checkInputHasError('cep') ? 'hasError' : ''}
                         mask="99999-999"
+                        maskChar={null}
                       />
                     </S.InputContainer>
                     <S.InputContainer>
-                      <S.Label htmlFor="phone">Número</S.Label>
+                      <S.Label htmlFor="addressNumber">Número</S.Label>
                       <InputMask
                         type="text"
-                        id="phone"
-                        name="phone"
-                        value={form.values.phone}
+                        id="addressNumber"
+                        name="addressNumber"
+                        value={form.values.addressNumber}
                         onChange={form.handleChange}
                         onBlur={form.handleBlur}
                         className={
-                          checkInputHasError('phone') ? 'hasError' : ''
+                          checkInputHasError('addressNumber') ? 'hasError' : ''
                         }
-                        mask="(99)99999-9999"
+                        mask="99999999999"
+                        maskChar={null}
                       />
                     </S.InputContainer>
                   </S.InputSeparator>
@@ -368,6 +367,7 @@ const LateralMenu = () => {
                           checkInputHasError('cardNumber') ? 'hasError' : ''
                         }
                         mask="9999 9999 9999 9999"
+                        maskChar={null}
                       />
                     </S.InputContainer>
                     <S.InputContainer>
@@ -383,6 +383,7 @@ const LateralMenu = () => {
                           checkInputHasError('cardCode') ? 'hasError' : ''
                         }
                         mask="999"
+                        maskChar={null}
                       />
                     </S.InputContainer>
                   </S.InputSeparator>
@@ -402,6 +403,7 @@ const LateralMenu = () => {
                           checkInputHasError('expiresMonth') ? 'hasError' : ''
                         }
                         mask="99"
+                        maskChar={null}
                       />
                     </S.InputContainer>
                     <S.InputContainer>
@@ -416,7 +418,8 @@ const LateralMenu = () => {
                         className={
                           checkInputHasError('expiresYear') ? 'hasError' : ''
                         }
-                        mask="9999"
+                        mask="99"
+                        maskChar={null}
                       />
                     </S.InputContainer>
                   </S.InputSeparator>
